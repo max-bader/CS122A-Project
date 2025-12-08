@@ -7,9 +7,9 @@ def get_db_connection():
     """Connects to MySQL database"""
     return mysql.connector.connect(
         host="localhost",
-        user="root",
-        password="NewPassword123!",
-        database="agent_platform"
+        user="test",
+        password="password"
+        #database="agent_platform"
     )
 
 def import_data(folder_name):
