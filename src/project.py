@@ -4,7 +4,7 @@ import csv
 import os
 
 def get_db_connection():
-    """Connects to MySQL database"""
+    """Connect to mysql database"""
     return mysql.connector.connect(
         host="localhost",
         user="test",
@@ -13,7 +13,7 @@ def get_db_connection():
     )
 
 def import_data(folder_name):
-    """Question 1: Import data from CSV files into mySQL database"""
+    """Import data from csv files into mysql database"""
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -152,7 +152,7 @@ def import_data(folder_name):
         return False
 
 def insertAgentClient(uid, username, email, card_number, card_holder, expiration_date, cvv, zip_code, interests):
-    """Question 2: Inserts a new agent client"""
+    """Inserts a new agent client"""
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -182,7 +182,7 @@ def insertAgentClient(uid, username, email, card_number, card_holder, expiration
         return False
 
 def addCustomizedModel(mid, bmid):
-    """Question 3: Adds the customized model"""
+    """Adds the customized model"""
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -202,7 +202,7 @@ def addCustomizedModel(mid, bmid):
         return False
 
 def deleteBaseModel(bmid):
-    """Question 4: Deletes the base model"""
+    """Deletes the base model"""
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -226,7 +226,7 @@ def deleteBaseModel(bmid):
         return False
 
 def listInternetService(bmid):
-    """Question 5: Lists the internet services needed for the base model"""
+    """Lists the internet services needed for the base model"""
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -252,7 +252,7 @@ def listInternetService(bmid):
         return False
 
 def countCustomizedModel(*bmids):
-    """Question 6: Counts the customized models for the given base model IDs"""
+    """Counts the customized models for the given base model ids"""
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -282,7 +282,7 @@ def countCustomizedModel(*bmids):
         return False
 
 def topNDurationConfig(uid, n):
-    """Question 7: Finds the top N longest duration configurations for a client"""
+    """Finds the top N longest duration configurations for a client"""
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -310,7 +310,7 @@ def topNDurationConfig(uid, n):
         return False
 
 def listBaseModelKeyWord(keyword):
-    """Question 8: Lists base models using LLM services with certain keyword in domain"""
+    """Lists base models using LLM services with certain keyword in domain"""
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -339,7 +339,7 @@ def listBaseModelKeyWord(keyword):
         return False
 
 def printNL2SQLresult():
-    """Question 9: Prints the NL2SQL experiment results from CSV file"""
+    """Prints the NL2SQL experiment results from CSV file"""
     try:
         csv_file = "nl2sql_results.csv"
         
@@ -357,7 +357,6 @@ def printNL2SQLresult():
         return False
 
 def main():
-    """Main function that handles command-line arguments and runs the necessary code"""
     if len(sys.argv) < 2:
         print("Error: No function specified")
         return
