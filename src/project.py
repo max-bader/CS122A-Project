@@ -28,7 +28,7 @@ def import_data(folder_name):
             cursor.execute(f"DROP TABLE IF EXISTS {table}")
         cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
         
-        # Create all tables needed
+        # Create tables
         ddl_statements = [
             """CREATE TABLE Users (
                 uid INT,
@@ -115,7 +115,7 @@ def import_data(folder_name):
         for ddl in ddl_statements:
             cursor.execute(ddl)
         
-        # Import all CSV files for testing
+        # import csv files
         csv_files = [
             ("User.csv", "Users", 3),
             ("AgentCreator.csv", "AgentCreator", 3),
@@ -157,17 +157,15 @@ def insertAgentClient(uid, username, email, card_number, card_holder, expiration
         conn = get_db_connection()
         cursor = conn.cursor()
         
-        # Try to insert into Users table (will fail if user already exists)
         try:
             cursor.execute(
                 "INSERT INTO Users (uid, email, username) VALUES (%s, %s, %s)",
                 (uid, email, username)
             )
         except:
-            # User already exists, that's okay - just continue to insert into AgentClient
             pass
         
-        # Insert into AgentClient (will fail if already exists or other constraint violation)
+        # insert into agentclient table
         cursor.execute(
             """INSERT INTO AgentClient (uid, interests, cardholder, expire, cardno, cvv, zip) 
                VALUES (%s, %s, %s, %s, %s, %s, %s)""",
@@ -210,8 +208,7 @@ def deleteBaseModel(bmid):
         cursor = conn.cursor()
         
         cursor.execute("DELETE FROM BaseModel WHERE bmid = %s", (bmid,))
-        
-        # Check if any rows were deleted
+    
         if cursor.rowcount == 0:
             conn.rollback()
             cursor.close()
