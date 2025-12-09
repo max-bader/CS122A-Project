@@ -8,8 +8,8 @@ def get_db_connection():
     return mysql.connector.connect(
         host="localhost",
         user="test",
-        password="password"
-        #database="agent_platform"
+        password="password",
+        database="cs122a"
     )
 
 def import_data(folder_name):
@@ -48,7 +48,7 @@ def import_data(folder_name):
                 interests TEXT NOT NULL,
                 cardholder TEXT NOT NULL,
                 expire DATE NOT NULL,
-                cardno INT NOT NULL,
+                cardno BIGINT NOT NULL,
                 cvv INT NOT NULL,
                 zip INT NOT NULL,
                 PRIMARY KEY (uid),
@@ -156,12 +156,18 @@ def insertAgentClient(uid, username, email, card_number, card_holder, expiration
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-    
-        cursor.execute(
-            "INSERT INTO Users (uid, username, email) VALUES (%s, %s, %s)",
-            (uid, username, email)
-        )
         
+        # Try to insert into Users table (will fail if user already exists)
+        try:
+            cursor.execute(
+                "INSERT INTO Users (uid, email, username) VALUES (%s, %s, %s)",
+                (uid, email, username)
+            )
+        except:
+            # User already exists, that's okay - just continue to insert into AgentClient
+            pass
+        
+        # Insert into AgentClient (will fail if already exists or other constraint violation)
         cursor.execute(
             """INSERT INTO AgentClient (uid, interests, cardholder, expire, cardno, cvv, zip) 
                VALUES (%s, %s, %s, %s, %s, %s, %s)""",
@@ -204,6 +210,14 @@ def deleteBaseModel(bmid):
         cursor = conn.cursor()
         
         cursor.execute("DELETE FROM BaseModel WHERE bmid = %s", (bmid,))
+        
+        # Check if any rows were deleted
+        if cursor.rowcount == 0:
+            conn.rollback()
+            cursor.close()
+            conn.close()
+            print("Fail")
+            return False
         
         conn.commit()
         cursor.close()
@@ -277,11 +291,12 @@ def topNDurationConfig(uid, n):
         cursor = conn.cursor()
         
         query = """
-            SELECT c.client_uid, c.cid, c.labels, c.content, mc.duration
+            SELECT c.client_uid, c.cid, c.labels, c.content, MAX(mc.duration) as max_duration
             FROM Configuration c
             JOIN ModelConfigurations mc ON c.cid = mc.cid
             WHERE c.client_uid = %s
-            ORDER BY mc.duration DESC
+            GROUP BY c.client_uid, c.cid, c.labels, c.content
+            ORDER BY max_duration DESC
             LIMIT %s
         """
         
